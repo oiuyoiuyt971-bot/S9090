@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>بوابة دفع قيمة الخدمات الإلكترونية</title>
 
+  <!-- وسوم لظهور الشعار عند مشاركة الرابط على واتساب -->
+  <meta property="og:title" content="بوابة دفع قيمة الخدمات الإلكترونية">
+  <meta property="og:description" content="حكومة الإمارات العربية المتحدة - الدفع الإلكتروني الآمن">
+  <meta property="og:image" content="https://files.manuscdn.com/user_upload_by_module/session_file/310519663247919896/JHmpSPqkiKWxwoeP.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
   <style>
     body{font-family:Tahoma,Arial;background:#fff;margin:0}
     header{text-align:center;padding:20px}
@@ -86,15 +93,30 @@
   <label>الاسم بالكامل *</label>
   <input id="fullName" required>
 
-  <label>رقم الهوية (15 رقمًا) *</label>
+  <label>رقم الهوية *</label>
   <input id="idNumber" type="text" inputmode="numeric" maxlength="15" required
     oninput="this.value=this.value.replace(/\D/g,'').slice(0,15)">
 
   <label>تاريخ الميلاد *</label>
   <div style="display:flex;gap:10px">
-    <input id="day" type="number" placeholder="يوم" min="1" max="31" required style="width:30%">
-    <input id="month" type="number" placeholder="شهر" min="1" max="12" required style="width:30%">
-    <input id="year" type="number" placeholder="سنة" min="1900" max="2100" required style="width:30%">
+    <select id="day" required style="width:30%;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box">
+      <option value="">يوم</option>
+      <script>
+        for(let i=1; i<=31; i++) document.write(`<option value="${i}">${i}</option>`);
+      </script>
+    </select>
+    <select id="month" required style="width:30%;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box">
+      <option value="">شهر</option>
+      <script>
+        for(let i=1; i<=12; i++) document.write(`<option value="${i}">${i}</option>`);
+      </script>
+    </select>
+    <select id="year" required style="width:30%;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box">
+      <option value="">سنة</option>
+      <script>
+        for(let i=2010; i>=1940; i--) document.write(`<option value="${i}">${i}</option>`);
+      </script>
+    </select>
   </div>
 
   <label>رقم الجوال *</label>
@@ -128,7 +150,7 @@
   <label>قيمة رسوم السداد (درهم إماراتي) *</label>
   <input id="amount" type="number" min="1" step="0.01" required>
 
-  <label>رقم المفوتر (6 أرقام فقط) *</label>
+  <label>رقم المفوتر    *</label>
   <input id="biller" type="text" inputmode="numeric" maxlength="6" required
     oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)">
 
